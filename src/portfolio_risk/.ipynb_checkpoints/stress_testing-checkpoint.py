@@ -17,18 +17,6 @@ def default_scenarios() -> pd.DataFrame:
     )
 
 
-def historical_scenarios() -> pd.DataFrame:
-    """Illustrative one-period shocks based on recognisable market episodes."""
-    return pd.DataFrame(
-        {
-            "COVID-19 risk-off (Mar 2020)": [-0.12, -0.11, 0.02, -0.06, 0.03, -0.02],
-            "Rates repricing (2022)": [-0.07, -0.08, -0.09, -0.10, 0.02, -0.05],
-            "Credit sell-off (Mar 2020)": [-0.09, -0.08, 0.01, -0.12, 0.02, 0.01],
-        },
-        index=["US_Equity", "Europe_Equity", "US_10Y_Rates", "Investment_Grade_Credit", "EURUSD", "Gold"],
-    )
-
-
 def run_stress_tests(weights, scenarios):
     """Calculate asset-level and total P&L for every stress scenario."""
     weights = pd.Series(weights)
@@ -37,12 +25,3 @@ def run_stress_tests(weights, scenarios):
     result = contributions.T
     result["Total"] = result.sum(axis=1)
     return result.sort_values("Total")
-
-
-def reverse_stress(weights, scenarios, loss_limit):
-    """Find the multiple of each loss scenario needed to reach a loss limit."""
-    stressed_pnl = run_stress_tests(weights, scenarios)["Total"]
-    losses = -stressed_pnl[stressed_pnl < 0]
-    result = pd.DataFrame({"scenario_loss": losses, "loss_limit": loss_limit})
-    result["shock_multiplier"] = result["loss_limit"] / result["scenario_loss"]
-    return result.sort_values("shock_multiplier")

@@ -29,3 +29,16 @@ def factor_pnl_attribution(weights, exposures, factor_returns):
     """Approximate portfolio factor P&L contributions over time."""
     factor_exposure = portfolio_factor_exposure(weights, exposures)
     return factor_returns.mul(factor_exposure.reindex(factor_returns.columns), axis=1)
+
+
+def factor_return_proxies(asset_returns):
+    """Create simple factor-return proxies from the asset return panel."""
+    return pd.DataFrame(
+        {
+            "Equity Market": asset_returns[["US_Equity", "Europe_Equity"]].mean(axis=1),
+            "Rates": asset_returns["US_10Y_Rates"],
+            "Credit": asset_returns["Investment_Grade_Credit"],
+            "USD": asset_returns["EURUSD"],
+            "Commodity": asset_returns["Gold"],
+        }
+    )
